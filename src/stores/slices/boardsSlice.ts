@@ -20,6 +20,16 @@ const initialState : TBoardsState = {
                         id: v4(),
                         title: "Task 1",
                         description: "Description 1"
+                    },
+                    {
+                        id: v4(),
+                        title: "Task 2",
+                        description: "Description 2"
+                    },
+                    {
+                        id: v4(),
+                        title: "Task 3",
+                        description: "Description 3"
                     }
                 ]
             },
@@ -86,6 +96,64 @@ const boardsSlice = createSlice({
         const { id } = action.payload;
         state.boards = state.boards.filter(board => board.id !== id);
     },
+    addList: (state, action) => {
+        const { boardId, title } = action.payload;
+        const id : string = v4();
+
+        for (const board of state.boards) {
+            if (board.id === boardId) {
+                board.lists.push({
+                    id,
+                    title,
+                    tasks: []
+                });
+                return;
+            }
+        }
+    },
+    removeList: (state, action) => {
+        const { listId } = action.payload;
+
+        state.boards = state.boards.map(board => {
+            board.lists = board.lists.filter(list => list.id !== listId);
+            return board;
+        });
+    },
+    addTask: (state, action) => {
+        const { boardId, listId, title, description } = action.payload;
+        const id : string = v4();
+
+        state.boards = state.boards.map(board => {
+            if (board.id === boardId) {
+                board.lists = board.lists.map(list => {
+                    if (list.id === listId) {
+                        list.tasks.push({
+                            id,
+                            title,
+                            description
+                        });
+                    }
+                    return list;
+                });
+            }
+            return board;
+        });
+    },
+    removeTask: (state, action) => {
+        const { boardId, listId, taskId } = action.payload;
+        
+        state.boards = state.boards.map(board => {
+            if (board.id === boardId) {
+                board.lists = board.lists.map(list => {
+                    if (list.id === listId) {
+                        list.tasks = list.tasks.filter(task => task.id !== taskId);
+                    }
+                    return list;
+                });
+            }
+            return board;
+        });
+    },
     setCurrentBoard: (state, action) => {
         const { id } = action.payload;
         for (const board of state.boards) {
@@ -98,4 +166,13 @@ const boardsSlice = createSlice({
   },
 });
 
+export const { 
+    addBoard, 
+    removeBoard, 
+    setCurrentBoard,  
+    addList,
+    removeList,
+    addTask,
+    removeTask
+} = boardsSlice.actions;
 export const boardsReducer = boardsSlice.reducer;

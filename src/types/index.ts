@@ -5,6 +5,11 @@ export type TModalState = {
     taskId: string;
 };
 
+export type TAddBoardsModalState = {
+    isOpen: boolean;
+    title: string;
+};
+
 export type TBoardsState = {
     boards: TBoard[];
     currentBoardId: string;
