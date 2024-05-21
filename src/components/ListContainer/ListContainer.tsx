@@ -12,14 +12,15 @@ const ListContainer : React.FC = () => {
 
     if (!currentBoard) {
         return (
-            <div className="grow w-full text-left px-10">
-                Select a board
+            <div className="grow w-full text-left px-10 flex flex-col justify-center items-center text-white text-xl gap-5">
+                <h1>Select a board :(</h1>
+                <h1>Or create one!</h1>
             </div>
         );
     }
 
     return (
-        <div className="grow w-full text-left p-10 flex-col md:flex-row flex flex-wrap items-start gap-5">
+        <div className="grow w-full text-left p-10 flex-col md:flex-row flex flex-wrap items-start gap-5 content-start">
             {currentBoard.lists.map(list => (
                 <List 
                     key={list.id} 
@@ -28,7 +29,7 @@ const ListContainer : React.FC = () => {
                 />
             ))}
             <button 
-                className="w-[300px] p-5 bg-blue-600 text-white"
+                className="w-full md:w-[300px] p-5 bg-[#81689D] text-white text-lg hover:bg-[#FFD0EC] hover:text-[#1F2544] rounded-md"
                 onClick={() => dispatch(openModal())}
             >
                 Add List

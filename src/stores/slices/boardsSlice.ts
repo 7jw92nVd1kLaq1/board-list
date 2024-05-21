@@ -95,6 +95,7 @@ const boardsSlice = createSlice({
     removeBoard: (state, action) => {
         const { id } = action.payload;
         state.boards = state.boards.filter(board => board.id !== id);
+        state.currentBoardId = state.boards.length ? state.boards[0].id : "";
     },
     addList: (state, action) => {
         const { boardId, title } = action.payload;

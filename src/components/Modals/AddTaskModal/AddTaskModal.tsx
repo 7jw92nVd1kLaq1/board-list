@@ -12,20 +12,29 @@ import {
     useTypedDispatch, 
     useTypedSelector 
 } from "../../../hooks/redux";
+import { addLog } from "../../../stores/slices/loggerSlice";
 
 
 const AddTaskModal : React.FC = () => {
     const dispatch = useTypedDispatch();
 
     const boardId = useTypedSelector(state => state.boards.currentBoardId);
+    const boardTitle = useTypedSelector(
+        state => state.boards.boards.find(board => board.id === boardId)?.title
+    );
     const listId = useTypedSelector(state => state.addTaskModal.listId);
+    const listTitle = useTypedSelector(
+        state => state.boards.boards
+            .find(board => board.id === boardId)
+            ?.lists.find(list => list.id === listId)?.title
+    );
     const addTaskModalStatus = useTypedSelector(state => state.addTaskModal.isOpen);
     const title = useTypedSelector(state => state.addTaskModal.title);
     const description = useTypedSelector(state => state.addTaskModal.description);
 
     const parentStyle = clsx(
         'fixed', 'bg-black/50', 'w-screen', 'h-screen', 'items-center', 
-        'justify-center', 'flex-col', 
+        'justify-center', 'flex-col', 'z-30',
         addTaskModalStatus ? 'flex': 'hidden'
     );
 
@@ -36,6 +45,7 @@ const AddTaskModal : React.FC = () => {
             title: title,
             description: description,
         }));
+        dispatch(addLog({message: `Task '${title}' added to List '${listTitle}' of Board '${boardTitle}'`}));
         dispatch(reset());
         dispatch(closeModal());
     };

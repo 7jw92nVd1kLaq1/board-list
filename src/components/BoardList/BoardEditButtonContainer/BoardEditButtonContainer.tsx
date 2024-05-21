@@ -1,16 +1,22 @@
 import React, { useEffect, useRef } from "react";
 
-import add from "../../../assets/add.svg"
-import remove from "../../../assets/remove.svg"
-import { openModal } from "../../../stores/slices/addBoardsModalSlice";
+import { openModal as openAddBoardModal } from "../../../stores/slices/addBoardsModalSlice";
 
 import BoardEditButton from "./BoardEditButton/BoardEditButton";
 import clsx from "clsx";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../stores";
+import { openModal as openLoggerModal } from "../../../stores/slices/loggerSlice";
 
 
-const BoardEditButtonContainer : React.FC = () => {
+type BoardEditButtonContainerProps = {
+    toggleDeleteModeCallback: () => void;
+};
+
+
+const BoardEditButtonContainer : React.FC<BoardEditButtonContainerProps> = (
+    {toggleDeleteModeCallback}
+) => {
     const dispatch = useDispatch<AppDispatch>();
     const [visible, setVisible] = React.useState<boolean>(false);
     const MenuRef = useRef<HTMLInputElement>(null);
@@ -18,15 +24,15 @@ const BoardEditButtonContainer : React.FC = () => {
 
     const className = clsx(
         visible ? 'visible' : 'invisible',
-        'absolute', 'right-2', 'w-max'
+        'absolute', 'right-2', 'w-max', 'z-50', 'overflow-hidden'
     );
 
     const addBoard = () => {
-        dispatch(openModal());
+        dispatch(openAddBoardModal());
     }
 
-    const deleteBoard = () => {
-        console.log("Delete Board");
+    const checkBoardLog = () => {
+        dispatch(openLoggerModal())
     }
 
     useEffect(() => {
@@ -53,13 +59,26 @@ const BoardEditButtonContainer : React.FC = () => {
 
     return (
         <div className="mr-10 relative">
-            <button ref={MenuButtonRef} className="p-2 m-2 rounded-md shadow-md bg-[#FFD0EC] text-[#1F2544]">
+            <button 
+                ref={MenuButtonRef} 
+                className="p-2 m-2 rounded-md shadow-md bg-[#FFD0EC] text-[#1F2544]"
+            >
                 Menu
             </button>
             <div className={className} ref={MenuRef}>
                 <div className="flex flex-col overflow-hidden text-[#1F2544] items-stretch w-full rounded-lg">
-                    <BoardEditButton icon={add} name="Add Board" onClick={addBoard} />
-                    <BoardEditButton icon={remove} name="Delete Board" onClick={deleteBoard} />
+                    <BoardEditButton 
+                        name="Add Board" 
+                        onClick={addBoard} 
+                    />
+                    <BoardEditButton 
+                        name="Delete Board" 
+                        onClick={toggleDeleteModeCallback} 
+                    />
+                    <BoardEditButton 
+                        name="Check Board Log" 
+                        onClick={checkBoardLog} 
+                    />
                 </div>
             </div>
         </div>

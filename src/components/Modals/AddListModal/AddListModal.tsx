@@ -8,20 +8,35 @@ import {
     useTypedDispatch, 
     useTypedSelector 
 } from "../../../hooks/redux";
+import { addLog } from "../../../stores/slices/loggerSlice";
 
 
 const AddListModal : React.FC = () => {
     const dispatch = useTypedDispatch();
 
     const currentBoardId = useTypedSelector(state => state.boards.currentBoardId);
+    const currentBoardTitle = useTypedSelector(
+        state => state.boards.boards.find(board => board.id === currentBoardId)?.title
+    );
     const addListModalStatus = useTypedSelector(state => state.addListModal.isOpen);
     const title = useTypedSelector(state => state.addListModal.title);
 
     const parentStyle = clsx(
         'fixed', 'bg-black/50', 'w-screen', 'h-screen', 'items-center', 
-        'justify-center', 'flex-col', 
+        'justify-center', 'flex-col', 'z-30',
         addListModalStatus ? 'flex': 'hidden'
     );
+
+    const handleAddListClick = () => {
+        dispatch(addList({title: title, boardId: currentBoardId}));
+        dispatch(addLog({message: `List '${title}' added to Board '${currentBoardTitle}'`}));
+        dispatch(reset());
+    };
+
+    const handleCloseModalClick = () => {
+        dispatch(closeModal());
+        dispatch(reset());
+    };
 
     return (
         <div className={parentStyle}>
@@ -35,19 +50,13 @@ const AddListModal : React.FC = () => {
                     onChange={(e) => dispatch(setTitle(e.target.value))}
                 />
                 <button 
-                    onClick={() => {
-                        dispatch(addList({title: title, boardId: currentBoardId}));
-                        dispatch(reset());
-                    }} 
+                    onClick={handleAddListClick}
                     className="text-white mx-2"
                 >
                     Add List
                 </button>
                 <button 
-                    onClick={() => {
-                        dispatch(closeModal());
-                        dispatch(reset());
-                    }} 
+                    onClick={handleCloseModalClick}
                     className="text-white mx-2"
                 >
                     Close

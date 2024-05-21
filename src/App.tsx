@@ -6,6 +6,7 @@ import AddBoardModal from './components/Modals/AddBoardModal/AddBoardModal'
 import ListContainer from './components/ListContainer/ListContainer'
 import AddTaskModal from './components/Modals/AddTaskModal/AddTaskModal'
 import AddListModal from './components/Modals/AddListModal/AddListModal'
+import LoggerModal from './components/Modals/LoggerModal/LoggerModal'
 
 
 const globalStyles = clsx(
@@ -26,6 +27,7 @@ function App() {
       <AddBoardModal />
       <AddListModal />
       <AddTaskModal />
+      <LoggerModal />
     </div>
   );
 }

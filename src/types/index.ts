@@ -16,6 +16,7 @@ export type TBoardsState = {
 }
 
 export type TLoggerState = {
+    isOpen: boolean;
     logs: TLog[];
 };
 
@@ -39,7 +40,6 @@ export type TBoard = {
 
 export type TLog = {
     id: string;
-    author: string;
     message: string;
     timestamp: string;
 };

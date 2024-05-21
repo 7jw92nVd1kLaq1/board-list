@@ -2,7 +2,7 @@ import React from "react";
 
 
 type BoardEditButtonProps = {
-    icon: string;
+    icon?: string;
     name: string;
     onClick: () => void;
 };
@@ -10,11 +10,11 @@ type BoardEditButtonProps = {
 const BoardEditButton : React.FC<BoardEditButtonProps> = ({icon, name, onClick}) => {
     return (
         <button 
-            className="bg-[#81689d] text-[#FFD0EC] p-3 flex gap-2 items-center w-full" 
+            className="bg-[#FFD0EC] text-[#1F2544] hover:bg-[#1F2544] hover:text-[#FFD0EC] p-3 flex gap-2 items-center w-full" 
             style={{borderRadius: '0px'}} 
             onClick={onClick}
         >
-            <img src={icon} alt="add" className="w-[16px] h-[16px]" />
+            {icon && <img src={icon} className="w-[16px] h-[16px]" />}
             {name}
         </button>
     );
