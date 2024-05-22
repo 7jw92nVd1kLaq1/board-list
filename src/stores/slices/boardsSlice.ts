@@ -120,6 +120,21 @@ const boardsSlice = createSlice({
             return board;
         });
     },
+    setList: (state, action) => {
+        const { boardId, listId, tasks } = action.payload;
+
+        state.boards = state.boards.map(board => {
+            if (board.id === boardId) {
+                board.lists = board.lists.map(list => {
+                    if (list.id === listId) {
+                        list.tasks = tasks;
+                    }
+                    return list;
+                });
+            }
+            return board;
+        });
+    },
     addTask: (state, action) => {
         const { boardId, listId, title, description } = action.payload;
         const id : string = v4();
@@ -173,6 +188,7 @@ export const {
     setCurrentBoard,  
     addList,
     removeList,
+    setList,
     addTask,
     removeTask
 } = boardsSlice.actions;

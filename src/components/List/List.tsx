@@ -11,6 +11,7 @@ import { useTypedDispatch, useTypedSelector } from "../../hooks/redux";
 import { openModal, setListId } from "../../stores/slices/addTaskModalSlice";
 import { removeList } from "../../stores/slices/boardsSlice";
 import { addLog } from "../../stores/slices/loggerSlice";
+import { Draggable, Droppable } from "react-beautiful-dnd";
 
 
 type ListProps = {
@@ -36,6 +37,10 @@ const List : React.FC<ListProps> = ({ list, id }) => {
         isDeleteModeOn ? "border-2 border-red-500" : "" 
     );
     const tasksContainerStyle = isOpen ? "flex flex-col gap-4 mt-8" : "hidden";
+    const addButtonStyle = clsx(
+        "pl-1 bg-[#1F2544] text-[#FFD0EC] w-full text-left items-center gap-4 mt-4",
+        isOpen ? 'flex' : "hidden"
+    );
     const settingsContainerStyle = isSettingsOpen ? 
         "absolute bg-[#FFD0EC] right-0 top-[35px] rounded-md w-[255px] overflow-hidden": 
         "hidden";
@@ -104,23 +109,36 @@ const List : React.FC<ListProps> = ({ list, id }) => {
                     </button>
                 </div>
             </div>
-            <div className={tasksContainerStyle}>
-                {list.tasks.length ? list.tasks.map(task => (
-                    <Task 
-                        key={task.id} 
-                        id={task.id} 
-                        listId={listId}
-                        title={task.title} 
-                        description={task.description} 
-                        deleteMode={isDeleteModeOn}
-                    />
-                )) : (
-                    <div className="text-center text-xl font-medium my-8">
-                        No Tasks :(
-                    </div>
-                )}
+            <div>
+                <Droppable droppableId={listId}>
+                    {(provided) => (
+                        <div className={tasksContainerStyle} ref={provided.innerRef} {...provided.droppableProps}>
+                            {list.tasks.length ? list.tasks.map((task, index) => (
+                                <Draggable key={task.id} draggableId={task.id} index={index}>
+                                    {(provided) => (
+                                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
+                                            <Task 
+                                                key={task.id} 
+                                                id={task.id} 
+                                                listId={listId}
+                                                title={task.title} 
+                                                description={task.description} 
+                                                deleteMode={isDeleteModeOn}
+                                            />
+                                        </div>
+                                    )}
+                                </Draggable>
+                            )) : (
+                                <div className="text-center text-xl font-medium my-8">
+                                    No Tasks :(
+                                </div>
+                            )}
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
                 <button 
-                    className="pl-1 bg-[#1F2544] text-[#FFD0EC] w-full text-left flex items-center gap-4"
+                    className={addButtonStyle}
                     onClick={() => {
                         dispatch(setListId(listId));
                         dispatch(openModal())

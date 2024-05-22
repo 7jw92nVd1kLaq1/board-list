@@ -7,6 +7,10 @@ import clsx from "clsx";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../stores";
 import { openModal as openLoggerModal } from "../../../stores/slices/loggerSlice";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { app } from "../../../firebase";
+import { setUser } from "../../../stores/slices/userSlice";
+import { useAuth } from "../../../hooks/redux";
 
 
 type BoardEditButtonContainerProps = {
@@ -14,10 +18,9 @@ type BoardEditButtonContainerProps = {
 };
 
 
-const BoardEditButtonContainer : React.FC<BoardEditButtonContainerProps> = (
-    {toggleDeleteModeCallback}
-) => {
+const BoardEditButtonContainer : React.FC<BoardEditButtonContainerProps> = ({toggleDeleteModeCallback}) => {
     const dispatch = useDispatch<AppDispatch>();
+    const { email: userEmail } = useAuth();
     const [visible, setVisible] = React.useState<boolean>(false);
     const MenuRef = useRef<HTMLInputElement>(null);
     const MenuButtonRef = useRef<HTMLButtonElement>(null);
@@ -26,6 +29,25 @@ const BoardEditButtonContainer : React.FC<BoardEditButtonContainerProps> = (
         visible ? 'visible' : 'invisible',
         'absolute', 'right-2', 'w-max', 'z-50', 'overflow-hidden'
     );
+
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const handleLogin = async () => {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        if (!user) return;
+
+        const email = user.email;
+        const id = user.uid;
+        const accessToken = await user.getIdToken();
+
+        dispatch(setUser({ email, id, accessToken }));
+    };
+
+    const handleLogout = () => {
+        dispatch(setUser({ email: "", id: "", accessToken: "" }));
+    };
 
     const addBoard = () => {
         dispatch(openAddBoardModal());
@@ -67,6 +89,12 @@ const BoardEditButtonContainer : React.FC<BoardEditButtonContainerProps> = (
             </button>
             <div className={className} ref={MenuRef}>
                 <div className="flex flex-col overflow-hidden text-[#1F2544] items-stretch w-full rounded-lg">
+                    {userEmail && (
+                    <div className="flex flex-col gap-1 items-start bg-[#FFD0EC] p-3">
+                        <p className="text-lg font-medium">Welcome!</p>
+                        <p className="text-sm line-clamp-1">{userEmail.slice(0, 20)}{userEmail.length > 20 && "..."}</p>
+                    </div>
+                    )}
                     <BoardEditButton 
                         name="Add Board" 
                         onClick={addBoard} 
@@ -79,6 +107,18 @@ const BoardEditButtonContainer : React.FC<BoardEditButtonContainerProps> = (
                         name="Check Board Log" 
                         onClick={checkBoardLog} 
                     />
+                    {!userEmail && (
+                        <BoardEditButton
+                            name="Login"
+                            onClick={handleLogin}
+                        />
+                    )}
+                    {userEmail && (
+                        <BoardEditButton
+                            name="Logout"
+                            onClick={handleLogout}
+                        />
+                    )}
                 </div>
             </div>
         </div>
